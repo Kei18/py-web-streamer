@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+    <head>
+	<meta charset="UTF-8"/>
+	<title>Document</title>
+    </head>
+    <body>
+	<div id="webcam"></div>
+	<script type="text/javascript">
+	(function () {
+	    var imageNr = 0;
+	    var paused = false;
+	    createImageLayer();
+
+	    function createImageLayer(ipAddress, port) {
+		var img = new Image();
+		img.style.position = "absolute";
+		img.style.zIndex = -1;
+		img.onload = imageOnload;
+		img.src = location.href + "snapshot?type=grayscale/" + (++imageNr);
+		var webcam = document.getElementById("webcam");
+		webcam.insertBefore(img, webcam.firstChild);
+	    }
+
+	    function imageOnload() {
+		var finished;
+		this.style.zIndex = imageNr;
+		while (this.nextSibling) {
+		    this.parentNode.removeChild(this.nextSibling);
+		}
+		if (!paused) createImageLayer();
+	    }
+	    function imageOnclick() {
+		paused = !paused;
+		if (!paused) createImageLayer();
+	    }
+	})();
+	</script>
+    </body>
+</html>
