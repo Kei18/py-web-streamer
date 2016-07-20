@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
+# WebCam Streaming
+#
 # created by Keisuke Okumura
 
 import os
@@ -8,37 +10,35 @@ from bottle import route, run, view, get, HTTPResponse, request, static_file
 from bottle import TEMPLATE_PATH
 import atexit
 import cv2
+from camera import Camera
+from calibration import Calibration
 
 
-# ===== CAMERA MATRIX ======
+CAMERA = Camera()
+CALIBRATION = Calibration()
 
 
-# ===== PATHの設定 =====
+# PATHの設定
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_PATH.append(BASE_DIR + "/views")
 
-# ===== WEBCAMの設定 =====
-capture = cv2.VideoCapture(1)
-capture.set(3, 640)  # width
-capture.set(4, 480)  # height
-capture.set(5, 5)    # FPS
-if capture.isOpened() is False:
-    raise("IO Error")
 
-
-# ===== 終了ハンドラ =====
+# 終了ハンドラ
 def end_handler():
-    capture.release()
+    CAMERA.capture.release()
 
 
-# ===== OpenCVのフィルター =====
+# OpenCVのフィルター
 def filter(image, type):
     if type == "grayscale":
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    elif type == "undistort":
+        image = cv2.undistort(image, CALIBRATION.mtx, CALIBRATION.dist,
+                              None, CALIBRATION.newcameramtx)
     return image
 
 
-# ===== サーバー =====
+# 以下、サーバー設定
 @route('/css/<filename>')
 def css_dir(filename):
     """CSSファイルのパス作成
@@ -56,19 +56,20 @@ def images(filename):
 @route('/')
 @view('index')
 def index():
-    return dict()
+    type = request.query.type if request.query.type else None
+    return dict(type=type)
 
 
 @route('/snapshot')
 @route('/snapshot/<num>')
 def snapshot(num=0):
-    ret, image = capture.read()
+    ret, image = CAMERA.capture.read()
     if not ret:
         return HTTPResponse(status=400, body="ERROR")
     if request.query.type:
-        image = filter(image, request.query.type)
-    cv2.imwrite(BASE_DIR+"/static/images/img.jpg", image)
-    return static_file("img.jpg", root=BASE_DIR+"/static/images")
+        image = filter(image, request.query.type.split('/')[0])
+    cv2.imwrite(BASE_DIR+"/static/images/snapshot/img.jpg", image)
+    return static_file("img.jpg", root=BASE_DIR+"/static/images/snapshot/")
 
 
 if __name__ == '__main__':

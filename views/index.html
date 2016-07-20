@@ -3,6 +3,7 @@
     <head>
 	<meta charset="UTF-8"/>
 	<title>Document</title>
+	<style>* { margin:0; padding:0; }</style>
     </head>
     <body>
 	<div id="webcam"></div>
@@ -17,7 +18,8 @@
 		img.style.position = "absolute";
 		img.style.zIndex = -1;
 		img.onload = imageOnload;
-		img.src = location.href + "snapshot?type=grayscale/" + (++imageNr);
+		var host = location.href.split('/').slice(0, 3).join('/');
+		img.src = host + "/snapshot?type={{type}}/" + (++imageNr);
 		var webcam = document.getElementById("webcam");
 		webcam.insertBefore(img, webcam.firstChild);
 	    }

@@ -1,0 +1,4 @@
+*.pyc
+/pickle/
+/static/images/snapshot/
+/static/images/calibration/
