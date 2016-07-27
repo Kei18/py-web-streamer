@@ -110,16 +110,20 @@ class Calibration(object):
     # カメラパラメーターのPICKLEを解凍
     # ================================
     def load_data(self):
-        with open(self.pickle_path, mode='rb') as f:
-            obj = pickle.load(f)
-        self.ret = obj['ret']
-        self.mtx = obj['mtx']
-        self.dist = obj['dist']
-        self.newcameramtx = obj['newcameramtx']
-        self.roi = obj['roi']
-        self.rvecs = obj['rvecs']
-        self.tvecs = obj['tvecs']
-        print 'finish loading data'
+        try:
+            with open(self.pickle_path, mode='rb') as f:
+                obj = pickle.load(f)
+            self.ret = obj['ret']
+            self.mtx = obj['mtx']
+            self.dist = obj['dist']
+            self.newcameramtx = obj['newcameramtx']
+            self.roi = obj['roi']
+            self.rvecs = obj['rvecs']
+            self.tvecs = obj['tvecs']
+            print 'finish loading data'
+        except:
+            print """%s does not exist... You have to do camera calibration!
+            """ % self.pickle_path
 
 
 if __name__ == '__main__':

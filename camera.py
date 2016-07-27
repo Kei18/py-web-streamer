@@ -39,7 +39,7 @@ class Camera(object):
         self.capture.set(4, self.image_height)
         self.capture.set(5, self.fps)
         if self.capture.isOpened() is False:
-            raise("IO Error")
+            raise IOError('Camera cannot open.')
         print 'finish setting camera'
 
     # ================================
@@ -59,13 +59,16 @@ class Camera(object):
     # WebカメラのPICKLEを解凍
     # ================================
     def load_data(self):
-        with open(self.pickle_path, mode='rb') as f:
-            obj = pickle.load(f)
-        self.camera_num = obj['camera_num']
-        self.image_width = obj['image_width']
-        self.image_height = obj['image_height']
-        self.fps = obj['fps']
-        print 'finish loading data'
+        try:
+            with open(self.pickle_path, mode='rb') as f:
+                obj = pickle.load(f)
+            self.camera_num = obj['camera_num']
+            self.image_width = obj['image_width']
+            self.image_height = obj['image_height']
+            self.fps = obj['fps']
+            print 'finish loading data'
+        except:
+            print "%s does not exist..." % self.pickle_path
 
     # ================================
     # スナップショットを撮影

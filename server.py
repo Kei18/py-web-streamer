@@ -14,7 +14,7 @@ from camera import Camera
 from calibration import Calibration
 
 
-CAMERA = Camera()
+CAMERA = Camera(use_last=False, image_width=640, image_height=480)
 CALIBRATION = Calibration()
 
 
@@ -35,6 +35,10 @@ def filter(image, type):
     elif type == "undistort":
         image = cv2.undistort(image, CALIBRATION.mtx, CALIBRATION.dist,
                               None, CALIBRATION.newcameramtx)
+    elif type == "mirror":
+        image = cv2.flip(image, 1)
+    elif type == "blur":
+        image = cv2.GaussianBlur(image, (15, 15), 0)
     return image
 
 
