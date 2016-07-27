@@ -14,7 +14,7 @@ from camera import Camera
 from calibration import Calibration
 
 
-CAMERA = Camera(use_last=False, image_width=640, image_height=480)
+CAMERA = Camera(use_last=False, camera_num=0)
 CALIBRATION = Calibration()
 
 
@@ -80,4 +80,4 @@ if __name__ == '__main__':
     atexit.register(end_handler)
     PORT = 8080
     HOST = '0.0.0.0'
-    run(host=HOST, port=PORT, reloader=True)
+    run(host=HOST, port=PORT, reloader=False)
